@@ -1006,16 +1006,23 @@ async function callMakeOnly(userContent, existingThinking) {
   try {
     const promptCompleto = buildPromptConHistorial(userContent);
 
-    const payload = {
-      modo: modoActivo,
-      cliente: clienteActivo,
-      relato: userContent,
-      es_continuacion: conversacion.length > 2,
-      turno: Math.floor(conversacion.length / 2),
-      cotizacion_actual: cotizacionFinalTexto || '',
-      cotizacion_activa_id: cotizacionActivaId || '',
-      prompt_ordenado: promptCompleto
-    };
+const fotosInput = document.getElementById('fotos');
+const fotosBase64 = fotosInput.files.length 
+  ? await convertirFotosABase64(fotosInput.files) 
+  : [];
+
+const payload = {
+  modo: modoActivo,
+  cliente: clienteActivo,
+  relato: userContent,
+  es_continuacion: conversacion.length > 2,
+  turno: Math.floor(conversacion.length / 2),
+  cotizacion_actual: cotizacionFinalTexto || '',
+  cotizacion_activa_id: cotizacionActivaId || '',
+  cantidad_fotos: fotosInput.files.length, // 👈 NUEVO
+  fotos: fotosBase64, // 👈 NUEVO
+  prompt_ordenado: promptCompleto
+};
 
     const r = await fetch(MAKE_WEBHOOK, {
       method: 'POST',
