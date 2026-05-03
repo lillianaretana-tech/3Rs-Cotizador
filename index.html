@@ -166,9 +166,13 @@
       grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
       gap: 8px; margin-top: 10px;
     }
+    .photo-preview > div {
+      position: relative;
+    }
     .photo-preview img {
       width: 100%; height: 80px; object-fit: cover;
       border-radius: 10px; border: 1px solid var(--border);
+      display: block;
     }
 
     /* ── CHAT AREA ── */
@@ -485,10 +489,20 @@
   </div>
 
   <div class="card" id="cardFotos">
-    <div class="card-title"><span>4️⃣</span> Fotos</div>
-    <input id="fotos" type="file" accept="image/*" multiple/>
+    <div class="card-title"><span>4️⃣</span> Fotos del sitio</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button class="btn btn-green" onclick="abrirCamara()" style="font-size:15px;padding:14px 10px">
+        📷 Tomar foto
+      </button>
+      <button class="btn btn-light" onclick="abrirGaleria()" style="font-size:15px;padding:14px 10px">
+        🖼️ Subir fotos
+      </button>
+    </div>
+    <!-- inputs ocultos -->
+    <input id="inputCamara"  type="file" accept="image/*" capture="environment" style="display:none"/>
+    <input id="inputGaleria" type="file" accept="image/*" multiple style="display:none"/>
     <div id="preview" class="photo-preview"></div>
-    <p class="small">Las fotos quedan como referencia del proyecto.</p>
+    <p class="small" id="fotoCount">Sin fotos. Use los botones para agregar imágenes del proyecto.</p>
   </div>
 
   <div id="cardDinero" class="card" style="display:none">
@@ -811,20 +825,62 @@ function setMode(el) {
 }
 
 /* ═══════════════════════════════════════════
-   PHOTOS
+   PHOTOS — array acumulado + cámara / galería
 ════════════════════════════════════════════ */
-document.getElementById('fotos').addEventListener('change', function() {
-  const preview = document.getElementById('preview');
-  preview.innerHTML = '';
-  Array.from(this.files).forEach(file => {
-    const r = new FileReader();
-    r.onload = e => {
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      preview.appendChild(img);
+let fotosCapturadas = []; // DataURL strings
+
+function abrirCamara()  { document.getElementById('inputCamara').click(); }
+function abrirGaleria() { document.getElementById('inputGaleria').click(); }
+
+function agregarFotos(files) {
+  Array.from(files).forEach(function(file) {
+    var r = new FileReader();
+    r.onload = function(e) {
+      fotosCapturadas.push(e.target.result);
+      renderFotos();
     };
     r.readAsDataURL(file);
   });
+}
+
+function eliminarFoto(idx) {
+  fotosCapturadas.splice(idx, 1);
+  renderFotos();
+}
+
+function renderFotos() {
+  var preview  = document.getElementById('preview');
+  var countEl  = document.getElementById('fotoCount');
+  preview.innerHTML = '';
+  fotosCapturadas.forEach(function(dataUrl, idx) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:relative';
+    var img = document.createElement('img');
+    img.src = dataUrl;
+    img.style.cssText = 'width:100%;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border);display:block';
+    var btn = document.createElement('button');
+    btn.innerHTML = '✕';
+    btn.title = 'Eliminar';
+    btn.style.cssText = 'position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;line-height:22px;padding:0;font-weight:700';
+    btn.onclick = (function(i){ return function(){ eliminarFoto(i); }; })(idx);
+    wrap.appendChild(img);
+    wrap.appendChild(btn);
+    preview.appendChild(wrap);
+  });
+  if (countEl) {
+    countEl.textContent = fotosCapturadas.length
+      ? fotosCapturadas.length + ' foto(s) lista(s). Puede agregar más o eliminar individual.'
+      : 'Sin fotos. Use los botones para agregar imágenes del proyecto.';
+  }
+}
+
+document.getElementById('inputCamara').addEventListener('change', function() {
+  if (this.files.length) agregarFotos(this.files);
+  this.value = '';
+});
+document.getElementById('inputGaleria').addEventListener('change', function() {
+  if (this.files.length) agregarFotos(this.files);
+  this.value = '';
 });
 
 /* ═══════════════════════════════════════════
@@ -871,6 +927,8 @@ function limpiarTodo() {
   document.getElementById('monto').value = '';
   document.getElementById('notaDinero').value = '';
   document.getElementById('preview').innerHTML = '';
+  fotosCapturadas = [];
+  renderFotos();
   document.getElementById('chatBox').innerHTML = '';
   document.getElementById('cardFinal').style.display = 'none';
   document.getElementById('replyText').value = '';
@@ -942,7 +1000,7 @@ async function iniciarCotizacion() {
     if (m) userMsg = `MODO: REGISTRO DE PLATA\nCLIENTE: ${clienteActivo}\n\nTIPO: ${t}\nMONTO: ${m}${n ? '\nNOTA: ' + n : ''}\n\nPor favor registra este movimiento, calcula el saldo acumulado del proyecto si hay historial, indica si hay alertas de liquidez o pendientes de cobro.`;
   }
 
-  const nFotos = document.getElementById('fotos').files.length;
+  const nFotos = fotosCapturadas.length;
   if (nFotos > 0) userMsg += `\n\n(Se adjuntaron ${nFotos} foto(s) de referencia)`;
 
   // Reset conversation for new case
@@ -1006,11 +1064,6 @@ async function callMakeOnly(userContent, existingThinking) {
   try {
     const promptCompleto = buildPromptConHistorial(userContent);
 
-const fotosInput = document.getElementById('fotos');
-const fotosBase64 = fotosInput.files.length 
-  ? await convertirFotosABase64(fotosInput.files) 
-  : [];
-
 const payload = {
   modo: modoActivo,
   cliente: clienteActivo,
@@ -1019,8 +1072,8 @@ const payload = {
   turno: Math.floor(conversacion.length / 2),
   cotizacion_actual: cotizacionFinalTexto || '',
   cotizacion_activa_id: cotizacionActivaId || '',
-  cantidad_fotos: fotosInput.files.length, // 👈 NUEVO
-  fotos: fotosBase64, // 👈 NUEVO
+  cantidad_fotos: fotosCapturadas.length,
+  fotos: fotosCapturadas.map(function(d){ return d.split(',')[1] || d; }),
   prompt_ordenado: promptCompleto
 };
 
