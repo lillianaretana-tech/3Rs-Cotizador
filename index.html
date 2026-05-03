@@ -795,6 +795,7 @@ let editingId = null;
 let quoteCounter = parseInt(localStorage.getItem('rp_counter') || '1');
 
 const MAKE_WEBHOOK = 'https://hook.us2.make.com/vb5xuxp14ppgd0esfasm4azn9njwo3ik';
+const OPENAI_KEY   = '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';
 
 /* ═══════════════════════════════════════════
    TABS
@@ -882,6 +883,76 @@ document.getElementById('inputGaleria').addEventListener('change', function() {
   if (this.files.length) agregarFotos(this.files);
   this.value = '';
 });
+
+/* ═══════════════════════════════════════════
+   VISIÓN IA — comprimir + analizar fotos
+════════════════════════════════════════════ */
+function comprimirImagen(dataUrl, maxPx) {
+  maxPx = maxPx || 900;
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var ratio = Math.min(maxPx / img.width, maxPx / img.height, 1);
+      var canvas = document.createElement('canvas');
+      canvas.width  = Math.round(img.width  * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
+async function analizarFotosConIA() {
+  if (!fotosCapturadas.length) return '';
+  try {
+    var comprimidas = await Promise.all(
+      fotosCapturadas.map(function(d) { return comprimirImagen(d); })
+    );
+    var content = [
+      {
+        type: 'text',
+        text: 'Eres un experto en construcción y remodelación en Costa Rica. Analiza esta(s) foto(s) de obra y describe técnicamente lo que observas: tipo de superficie, daños visibles (grietas, humedad, óxido, descascarado, hongos, roturas), extensión aproximada del daño y estado general. Sé específico y conciso. Responde en español.'
+      }
+    ];
+    comprimidas.forEach(function(dataUrl) {
+      content.push({ type: 'image_url', image_url: { url: dataUrl, detail: 'low' } });
+    });
+
+    var resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + OPENAI_KEY
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        max_tokens: 450,
+        messages: [{ role: 'user', content: content }]
+      })
+    });
+
+    var data = await resp.json();
+
+    // Si la API devuelve error, mostrarlo
+    if (data.error) {
+      appendSystemMsg('⚠️ Error visión IA: ' + data.error.message);
+      return '';
+    }
+
+    if (data.choices && data.choices[0]) {
+      var resultado = data.choices[0].message.content.trim();
+      // Mostrar el análisis en el chat como referencia
+      appendSystemMsg('📷 Análisis de foto(s): ' + resultado);
+      return resultado;
+    }
+    return '';
+  } catch(e) {
+    appendSystemMsg('⚠️ Error de conexión al analizar fotos: ' + e.message);
+    return '';
+  }
+}
 
 /* ═══════════════════════════════════════════
    VOICE
@@ -976,7 +1047,9 @@ RIESGOS O CUIDADOS
 MENSAJE PARA EL CLIENTE (listo para copiar en WhatsApp)
 [mensaje profesional y amigable]
 
-Si el usuario responde tus preguntas, INCORPORA esa info al caso existente sin empezar de cero.` + buildPreciosTexto();
+Si el usuario responde tus preguntas, INCORPORA esa info al caso existente sin empezar de cero.
+
+REGLA IMPORTANTE SOBRE FOTOS: Cuando el mensaje incluya una sección "=== ANÁLISIS DE FOTOS (IA Visión) ===", ese análisis fue generado automáticamente por visión artificial mirando las fotos reales del sitio. Trátalo como información confirmada y confiable. NO preguntes sobre datos que ya aparecen en ese análisis (tipo de superficie, material, daños visibles, estado general). Solo pregunta lo que genuinamente no se puede ver en las fotos, como medidas o el alcance exacto del trabajo deseado.` + buildPreciosTexto();
 }
 
 /* ═══════════════════════════════════════════
@@ -1002,6 +1075,27 @@ async function iniciarCotizacion() {
 
   const nFotos = fotosCapturadas.length;
   if (nFotos > 0) userMsg += `\n\n(Se adjuntaron ${nFotos} foto(s) de referencia)`;
+
+  // Analizar fotos con visión IA antes de enviar
+  if (nFotos > 0) {
+    const statusEl = document.getElementById('estadoVoz');
+    statusEl.textContent = '🔍 Analizando fotos con IA...';
+    let analisis = '';
+    try {
+      analisis = await analizarFotosConIA();
+    } catch(err) {
+      analisis = '';
+    }
+    statusEl.textContent = '';
+    if (analisis) {
+      userMsg += `\n\n=== ANÁLISIS DE FOTOS (IA Visión) ===\n${analisis}\n=== FIN ANÁLISIS ===`;
+      // Mostrar en chat para confirmar que funcionó
+      // (se mostrará como parte del mensaje del usuario)
+    } else {
+      // Análisis falló — avisar en el chat
+      appendSystemMsg('⚠️ El análisis de fotos no pudo completarse. Se continúa sin análisis visual.');
+    }
+  }
 
   // Reset conversation for new case
   conversacion = [];
@@ -1072,8 +1166,7 @@ const payload = {
   turno: Math.floor(conversacion.length / 2),
   cotizacion_actual: cotizacionFinalTexto || '',
   cotizacion_activa_id: cotizacionActivaId || '',
-  cantidad_fotos: fotosCapturadas.length,
-  fotos: fotosCapturadas.map(function(d){ return d.split(',')[1] || d; }),
+  cantidad_fotos: fotosCapturadas.length, // fotos solo como referencia local, no se envían
   prompt_ordenado: promptCompleto
 };
 
