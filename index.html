@@ -1132,7 +1132,9 @@ MENSAJE PARA EL CLIENTE (listo para copiar en WhatsApp)
 
 Si el usuario responde tus preguntas, INCORPORA esa info al caso existente sin empezar de cero.
 
-REGLA IMPORTANTE SOBRE FOTOS: Cuando el mensaje incluya una sección "=== ANÁLISIS DE FOTOS (IA Visión) ===", ese análisis fue generado automáticamente por visión artificial mirando las fotos reales del sitio. Trátalo como información confirmada y confiable. NO preguntes sobre datos que ya aparecen en ese análisis (tipo de superficie, material, daños visibles, estado general). Solo pregunta lo que genuinamente no se puede ver en las fotos, como medidas o el alcance exacto del trabajo deseado.` + buildPreciosTexto();
+REGLA IMPORTANTE SOBRE FOTOS: Cuando el mensaje incluya una sección "=== ANÁLISIS DE FOTOS (IA Visión) ===", ese análisis fue generado automáticamente por visión artificial mirando las fotos reales del sitio. Trátalo como información confirmada y confiable. NO preguntes sobre datos que ya aparecen en ese análisis (tipo de superficie, material, daños visibles, estado general). Solo pregunta lo que genuinamente no se puede ver en las fotos, como medidas o el alcance exacto del trabajo deseado.
+
+REGLA IMPORTANTE SOBRE ADICIONALES: Cuando el mensaje incluya una sección "=== COTIZACIÓN ORIGINAL DEL PROYECTO ===", úsala como contexto completo del trabajo ya cotizado. NO preguntes sobre lo que ya está descrito ahí. Genera directamente la cotización del adicional nuevo, complementando lo que ya existe.` + buildPreciosTexto();
 }
 
 /* ═══════════════════════════════════════════
@@ -1148,6 +1150,19 @@ async function iniciarCotizacion() {
   modoActivo    = modo;
 
   let userMsg = `MODO: ${modoActivo.toUpperCase()}\nCLIENTE: ${clienteActivo}\n\n${relato}`;
+
+  // Si es adicional, buscar cotización guardada del mismo cliente y adjuntarla como contexto
+  if (modoActivo === 'adicional' && clienteActivo !== 'Sin nombre') {
+    var saved = getSaved();
+    var match = saved.filter(function(s) {
+      return s.cliente && s.cliente.toLowerCase().includes(clienteActivo.toLowerCase());
+    });
+    if (match.length > 0) {
+      var ultima = match[match.length - 1];
+      userMsg += '\n\n=== COTIZACIÓN ORIGINAL DEL PROYECTO ===\n' + ultima.body + '\n=== FIN COTIZACIÓN ORIGINAL ===';
+      appendSystemMsg('📎 Se adjuntó la cotización guardada de "' + ultima.cliente + '" como contexto.');
+    }
+  }
 
   if (modoActivo === 'dinero') {
     const m = document.getElementById('monto').value.trim();
