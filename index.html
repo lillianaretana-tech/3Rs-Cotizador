@@ -513,6 +513,24 @@
     <p class="small" id="fotoCount">Sin fotos. Use los botones para agregar imágenes del proyecto.</p>
   </div>
 
+  <!-- CARD MATERIALES -->
+  <div class="card" id="cardMateriales">
+    <div class="card-title"><span>5️⃣</span> ¿Incluye materiales?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button id="btnConMat" class="btn btn-green mat-toggle active-mat" onclick="setMateriales(true)">
+        🧱 Con materiales
+        <small style="display:block;font-size:11px;font-weight:400;margin-top:3px;color:#cce">Rommel compra todo</small>
+      </button>
+      <button id="btnSinMat" class="btn btn-light mat-toggle" onclick="setMateriales(false)">
+        👷 Solo mano de obra
+        <small style="display:block;font-size:11px;font-weight:400;margin-top:3px;color:#aaa">Cliente compra materiales</small>
+      </button>
+    </div>
+    <div id="listaMaterialesBox" style="display:none;margin-top:12px;padding:10px;background:#1a2a1a;border-radius:10px;border:1px solid #2a4a2a">
+      <p style="font-size:12px;color:#4ade80;margin-bottom:6px">✅ La IA generará lista de compra con precios y cantidades</p>
+    </div>
+  </div>
+
   <div id="cardDinero" class="card" style="display:none">
     <div class="card-title"><span>💵</span> Movimiento de plata</div>
     <div class="mini-grid">
@@ -873,12 +891,25 @@ function setMode(el) {
   // In money mode, hide relato textarea card and photos card to simplify UI
   document.getElementById('cardRelato').style.display = esDinero ? 'none' : 'block';
   document.getElementById('cardFotos').style.display = esDinero ? 'none' : 'block';
+  document.getElementById('cardMateriales').style.display = esDinero ? 'none' : 'block';
 }
 
 /* ═══════════════════════════════════════════
    PHOTOS — array acumulado + cámara / galería
 ════════════════════════════════════════════ */
 let fotosCapturadas = []; // DataURL strings
+let incluyeMateriales = true; // default: con materiales
+
+function setMateriales(val) {
+  incluyeMateriales = val;
+  document.getElementById('btnConMat').classList.toggle('active-mat', val);
+  document.getElementById('btnSinMat').classList.toggle('active-mat', !val);
+  document.getElementById('btnConMat').classList.toggle('btn-green', val);
+  document.getElementById('btnConMat').classList.toggle('btn-light', !val);
+  document.getElementById('btnSinMat').classList.toggle('btn-green', !val);
+  document.getElementById('btnSinMat').classList.toggle('btn-light', val);
+  document.getElementById('listaMaterialesBox').style.display = val ? 'block' : 'none';
+}
 
 function abrirCamara()  { document.getElementById('inputCamara').click(); }
 function abrirGaleria() { document.getElementById('inputGaleria').click(); }
@@ -1032,6 +1063,8 @@ function limpiarTodo() {
   document.getElementById('notaDinero').value = '';
   document.getElementById('preview').innerHTML = '';
   fotosCapturadas = [];
+  incluyeMateriales = true;
+  setMateriales(true);
   renderFotos();
   document.getElementById('chatBox').innerHTML = '';
   document.getElementById('cardFinal').style.display = 'none';
@@ -1049,6 +1082,19 @@ function limpiarTodo() {
    BUILD SYSTEM PROMPT
 ════════════════════════════════════════════ */
 function buildSystemPrompt() {
+  var formatoMateriales = incluyeMateriales ? `
+MATERIALES ESTIMADOS
+[lista con cantidades aproximadas]
+
+LISTA DE COMPRA (cuando incluye materiales)
+[tabla con: Material | Cantidad | Precio unitario estimado | Total]
+Ejemplo:
+- Pintura acrílica interior | 4 galones | ₡18.000 | ₡72.000
+- Sellador | 1 galón | ₡12.000 | ₡12.000
+- Rodillo y brocha | 1 juego | ₡5.000 | ₡5.000
+TOTAL MATERIALES: ₡XX.XXX` : `
+NOTA: Esta cotización es SOLO MANO DE OBRA. El cliente compra los materiales por su cuenta. NO incluir costos de materiales en el precio. Sí puedes mencionar qué materiales necesitará el cliente comprar, pero sin precio.`;
+
   return `Eres un maestro de obras experto en remodelaciones, reparaciones, construcción, presupuestos y control financiero de proyectos en Costa Rica.
 
 Tu rol es asistir a Rommel, un contratista con experiencia pero poco tecnológico. Debes:
@@ -1061,9 +1107,7 @@ RESUMEN DEL CASO
 
 TRABAJOS A REALIZAR
 [lista de trabajos]
-
-MATERIALES ESTIMADOS
-[lista con cantidades aproximadas]
+${formatoMateriales}
 
 MANO DE OBRA
 [desglose]
@@ -1215,6 +1259,7 @@ const payload = {
   cotizacion_actual: cotizacionFinalTexto || '',
   cotizacion_activa_id: cotizacionActivaId || '',
   cantidad_fotos: fotosCapturadas.length, // fotos solo como referencia local, no se envían
+  incluye_materiales: incluyeMateriales,
   prompt_ordenado: promptCompleto
 };
 
