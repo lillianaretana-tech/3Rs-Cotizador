@@ -794,8 +794,8 @@ let cotizacionActivaId = null; // ID de la cotización abierta/actual para actua
 let editingId = null;
 let quoteCounter = parseInt(localStorage.getItem('rp_counter') || '1');
 
-const MAKE_WEBHOOK = 'https://hook.us2.make.com/vb5xuxp14ppgd0esfasm4azn9njwo3ik';
-const OPENAI_KEY   = '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';
+const MAKE_WEBHOOK   = 'https://hook.us2.make.com/vb5xuxp14ppgd0esfasm4azn9njwo3ik';
+const VISION_WEBHOOK = 'https://hook.us2.make.com/obu9whlvur8troxea4h9msrsfhj5qabe';
 
 /* ═══════════════════════════════════════════
    TABS
@@ -910,46 +910,29 @@ async function analizarFotosConIA() {
     var comprimidas = await Promise.all(
       fotosCapturadas.map(function(d) { return comprimirImagen(d); })
     );
-    var content = [
-      {
-        type: 'text',
-        text: 'Eres un experto en construcción y remodelación en Costa Rica. Analiza esta(s) foto(s) de obra y describe técnicamente lo que observas: tipo de superficie, daños visibles (grietas, humedad, óxido, descascarado, hongos, roturas), extensión aproximada del daño y estado general. Sé específico y conciso. Responde en español.'
-      }
-    ];
-    comprimidas.forEach(function(dataUrl) {
-      content.push({ type: 'image_url', image_url: { url: dataUrl, detail: 'low' } });
-    });
 
-    var resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    var resp = await fetch(VISION_WEBHOOK, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + OPENAI_KEY
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o',
-        max_tokens: 450,
-        messages: [{ role: 'user', content: content }]
+        image:    comprimidas[0],
+        fotos:    comprimidas,
+        cantidad: comprimidas.length
       })
     });
 
-    var data = await resp.json();
+    var texto = await resp.text();
 
-    // Si la API devuelve error, mostrarlo
-    if (data.error) {
-      appendSystemMsg('⚠️ Error visión IA: ' + data.error.message);
+    if (!texto || texto.trim() === '') {
+      appendSystemMsg('⚠️ Rommel Vision no devolvió respuesta. Verifique que el escenario esté activo.');
       return '';
     }
 
-    if (data.choices && data.choices[0]) {
-      var resultado = data.choices[0].message.content.trim();
-      // Mostrar el análisis en el chat como referencia
-      appendSystemMsg('📷 Análisis de foto(s): ' + resultado);
-      return resultado;
-    }
-    return '';
+    appendSystemMsg('📷 Análisis de foto(s): ' + texto.trim());
+    return texto.trim();
+
   } catch(e) {
-    appendSystemMsg('⚠️ Error de conexión al analizar fotos: ' + e.message);
+    appendSystemMsg('⚠️ Error al analizar fotos: ' + e.message);
     return '';
   }
 }
