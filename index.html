@@ -441,7 +441,7 @@
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;"><img src="imagenes/logo.png" alt="3Rs Remodelaciones" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1);" /><h1 style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:#fff;">Rommel <span>Pro</span></h1></div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;"><img src="imagenes/logo.png" alt="3Rs Remodelaciones" style="height:44px;width:auto;object-fit:contain;" /><h1 style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:#fff;">Rommel <span>Pro</span></h1></div>
   <p>Asistente de obras y cotizaciones</p>
 </header>
 
@@ -1025,7 +1025,7 @@ async function analizarFotosConIA() {
       return '';
     }
 
-    appendSystemMsg('📷 Análisis de foto(s): ' + texto.trim());
+    // Análisis listo — NO mostrarlo en chat para evitar repetición
     return texto.trim();
 
   } catch(e) {
@@ -1239,6 +1239,10 @@ async function iniciarCotizacion() {
     }
   }
 
+  // Mensaje limpio para mostrar en la burbuja (sin el análisis técnico)
+  let userMsgVisible = `MODO: ${modoActivo.toUpperCase()}\nCLIENTE: ${clienteActivo}\n\n${relato}`;
+  if (nFotos > 0) userMsgVisible += `\n\n(Se adjuntaron ${nFotos} foto(s) de referencia)`;
+
   // Reset conversation for new case
   conversacion = [];
   cotizacionActivaId = null;
@@ -1247,8 +1251,8 @@ async function iniciarCotizacion() {
   showPanel('panelChat', document.querySelectorAll('.tab')[1]);
   document.getElementById('cardFinal').style.display = 'none';
 
-  appendUserMsg(userMsg);
-  await callIA(userMsg);
+  appendUserMsg(userMsgVisible);  // burbuja limpia
+  await callIA(userMsg);           // prompt completo con análisis va a la IA
 }
 
 /* ═══════════════════════════════════════════
