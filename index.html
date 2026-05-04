@@ -17,8 +17,10 @@
       --mid: #444;
       --silver: #888;
       --border: #dde8e3;
-      --bg: #f2f4f3;
+      --bg: #181818;
       --white: #ffffff;
+      --card-bg: #232323;
+      --card-border: #2e2e2e;
       --red: #c0392b;
       --orange: #e07b20;
       --radius: 16px;
@@ -30,7 +32,7 @@
     body {
       font-family: var(--font);
       background: var(--bg);
-      color: var(--dark);
+      color: #e0e0e0;
       padding-bottom: 160px;
       min-height: 100vh;
     }
@@ -83,16 +85,17 @@
 
     /* ── CARDS ── */
     .card {
-      background: var(--white);
+      background: #242424;
       border-radius: var(--radius);
       padding: 18px;
       margin-bottom: 14px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 4px 20px rgba(0,0,0,.3);
+      border: 1px solid #2e2e2e;
     }
     .card-title {
       font-size: 16px;
       font-weight: 700;
-      color: var(--green-dark);
+      color: #c94040;
       margin-bottom: 14px;
       display: flex;
       align-items: center;
@@ -103,8 +106,8 @@
     /* ── MODE OPTIONS ── */
     .mode-grid { display: grid; gap: 10px; }
     .mode-btn {
-      border: 2px solid var(--border);
-      background: #f9fdfb;
+      border: 2px solid #333;
+      background: #2a2a2a;
       border-radius: 14px;
       padding: 14px 16px;
       font-size: 16px;
@@ -113,19 +116,23 @@
       cursor: pointer;
       transition: all .2s;
       font-family: var(--font);
+      color: #ccc;
     }
     .mode-btn small { display: block; font-size: 12px; font-weight: 400; color: #777; margin-top: 3px; }
     .mode-btn.active { background: var(--green); color: white; border-color: var(--green); }
-    .mode-btn.active small { color: #b8efd0; }
+    .mode-btn.active small { color: #f5c6c6; }
 
     /* ── INPUTS ── */
-    label { display: block; font-size: 13px; font-weight: 700; color: var(--mid); margin: 12px 0 5px; }
-    input[type="text"], input[type="number"], textarea, select {
+    label { display: block; font-size: 13px; font-weight: 700; color: #aaa; margin: 12px 0 5px; }
+    input[type="text"], input[type="number"], input[type="date"], textarea, select {
       width: 100%; padding: 13px 14px;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid #333;
       border-radius: 12px;
       font-size: 16px;
       font-family: var(--font);
+      background: #1e1e1e;
+      color: #e0e0e0;
+      color-scheme: dark;
       color: var(--dark);
       background: var(--white);
       transition: border-color .2s;
@@ -148,11 +155,11 @@
     .btn:active { transform: scale(.97); }
     .btn-green  { background: var(--green); color: white; }
     .btn-green:hover { background: var(--green-dark); }
-    .btn-dark   { background: var(--black); color: white; }
-    .btn-light  { background: var(--green-light); color: var(--green-dark); }
+    .btn-dark   { background: #111; color: white; }
+    .btn-light  { background: #2a2a2a; color: #ccc; border: 1px solid #444; }
     .btn-red    { background: var(--red); color: white; }
     .btn-orange { background: var(--orange); color: white; }
-    .btn-gray   { background: #eee; color: #444; }
+    .btn-gray   { background: #2a2a2a; color: #bbb; }
     .btn-full   { width: 100%; }
     .btn-sm     { padding: 9px 14px; font-size: 13px; border-radius: 10px; }
 
@@ -194,31 +201,31 @@
       white-space: pre-wrap;
     }
     .msg-ia {
-      background: var(--green-light);
-      color: var(--dark);
+      background: #2a2a2a;
+      color: #e0e0e0;
       border-bottom-left-radius: 4px;
       align-self: flex-start;
     }
     .msg-user {
-      background: var(--black);
-      color: white;
+      background: #3a1a1a;
+      color: #f0d0d0;
       border-bottom-right-radius: 4px;
       align-self: flex-end;
       text-align: right;
     }
     .msg-system {
-      background: #fff8e6;
-      color: #7a5800;
+      background: #2a2200;
+      color: #f0c040;
       border-radius: 10px;
       font-size: 13px;
       align-self: center;
       text-align: center;
       padding: 8px 14px;
-      border: 1px solid #ffe299;
+      border: 1px solid #554400;
     }
     .msg-thinking {
-      background: var(--green-light);
-      color: var(--silver);
+      background: #2a2a2a;
+      color: #888;
       font-style: italic;
       border-bottom-left-radius: 4px;
       align-self: flex-start;
@@ -240,32 +247,33 @@
 
     /* ── COTIZATION RESULT ── */
     #quoteFinal {
-      background: #f7fdf9;
-      border: 1.5px solid var(--border);
+      background: #1e1e1e;
+      border: 1.5px solid #333;
       border-radius: 14px;
       padding: 16px;
       font-size: 14.5px;
       white-space: pre-wrap;
       min-height: 120px;
       line-height: 1.65;
+      color: #ddd;
     }
     .quote-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 
     /* ── SAVED LIST ── */
     .saved-list { display: flex; flex-direction: column; gap: 10px; }
     .saved-card {
-      background: var(--white);
+      background: #242424;
       border-radius: var(--radius);
       padding: 16px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 4px 20px rgba(0,0,0,.3);
       cursor: pointer;
       border-left: 4px solid var(--green);
       transition: transform .2s;
     }
     .saved-card:hover { transform: translateX(3px); }
-    .saved-card h3 { font-size: 15px; font-weight: 700; color: var(--dark); }
+    .saved-card h3 { font-size: 15px; font-weight: 700; color: #e0e0e0; }
     .saved-card .meta { font-size: 12px; color: var(--silver); margin-top: 4px; }
-    .saved-card .preview { font-size: 13px; color: var(--mid); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .saved-card .preview { font-size: 13px; color: #aaa; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .saved-actions { display: flex; gap: 8px; margin-top: 10px; }
     .empty-state { text-align: center; padding: 40px 20px; color: var(--silver); }
     .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
@@ -274,14 +282,14 @@
     .modal-overlay {
       display: none;
       position: fixed; inset: 0;
-      background: rgba(0,0,0,.6);
+      background: rgba(0,0,0,.75);
       z-index: 300;
       align-items: flex-end;
       justify-content: center;
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: var(--white);
+      background: #242424;
       border-radius: 20px 20px 0 0;
       padding: 22px 18px;
       width: 100%; max-width: 780px;
@@ -291,14 +299,14 @@
     .modal-title {
       font-size: 17px;
       font-weight: 700;
-      color: var(--dark);
+      color: #e0e0e0;
       margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .close-modal {
-      background: #eee;
+      background: #333;
       border: none;
       border-radius: 50%;
       width: 32px; height: 32px;
@@ -343,9 +351,10 @@
     /* ── FOOTER ── */
     footer {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--white);
+      background: #1a1a1a;
       padding: 10px 14px;
-      box-shadow: 0 -4px 16px rgba(0,0,0,.1);
+      box-shadow: 0 -4px 16px rgba(0,0,0,.4);
+      border-top: 1px solid #2a2a2a;
     }
     .footer-nueva { display: flex; gap: 10px; }
     .footer-nueva .btn { flex: 1; }
@@ -356,8 +365,8 @@
       border-radius: 12px;
       font-size: 16px;
       font-family: var(--font);
-      color: var(--dark);
-      background: var(--white);
+      color: #e0e0e0;
+      background: #1e1e1e;
       min-height: 56px;
       max-height: 120px;
       resize: none;
@@ -365,7 +374,7 @@
     }
     .footer-chat textarea:focus { outline: none; border-color: var(--green-dark); }
     .footer-chat-label {
-      font-size: 13px; font-weight: 700; color: var(--green-dark);
+      font-size: 13px; font-weight: 700; color: #c94040;
       margin-bottom: 6px; display: block;
     }
     .footer-chat-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
@@ -375,14 +384,13 @@
     .small { font-size: 12px; color: var(--silver); margin-top: 6px; }
     .badge {
       display: inline-block;
-      background: var(--green-light);
-      color: var(--green-dark);
+      background: #3a1a1a;
+      color: #c94040;
       font-size: 11px; font-weight: 700;
       padding: 3px 10px; border-radius: 100px;
       margin-left: 8px;
     }
     #savedBadge { display: none; }
-
 
     /* ── PRECIOS ── */
     .precio-row {
@@ -391,16 +399,16 @@
       gap: 8px;
       align-items: center;
       padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #2e2e2e;
     }
     .precio-row:last-child { border-bottom: none; }
-    .precio-nombre { font-size: 14px; font-weight: 600; color: var(--dark); }
+    .precio-nombre { font-size: 14px; font-weight: 600; color: #ddd; }
     .precio-detalle { font-size: 12px; color: var(--silver); }
-    .precio-monto { font-size: 15px; font-weight: 700; color: var(--green-dark); white-space: nowrap; }
+    .precio-monto { font-size: 15px; font-weight: 700; color: #c94040; white-space: nowrap; }
     .precio-unidad { font-size: 12px; color: var(--silver); }
     .add-precio-form {
-      background: #f9fdfb;
-      border: 1.5px dashed var(--border);
+      background: #1e1e1e;
+      border: 1.5px dashed #333;
       border-radius: 14px;
       padding: 16px;
       margin-top: 12px;
@@ -409,11 +417,11 @@
     .precio-list { min-height: 40px; }
     .precio-empty { text-align:center; padding: 20px; color: var(--silver); font-size: 14px; }
     .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px 6px; border-radius: 8px; }
-    .btn-icon:hover { background: #f0f0f0; }
+    .btn-icon:hover { background: #2a2a2a; }
     .categoria-tag {
       display: inline-block;
-      background: var(--green-light);
-      color: var(--green-dark);
+      background: #3a1a1a;
+      color: #c94040;
       font-size: 10px; font-weight: 700;
       padding: 2px 8px; border-radius: 100px;
       margin-bottom: 2px;
@@ -446,6 +454,7 @@
     💾 Guardadas <span id="savedBadge" class="badge"></span>
   </button>
   <button class="tab" onclick="showPanel('panelPrecios', this)">💰 Mis Precios</button>
+  <button class="tab" onclick="showPanel('panelFinanzas', this); renderFinanzas()">📊 Finanzas</button>
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -704,6 +713,97 @@
       <button class="btn btn-light btn-sm" onclick="exportarPrecios()">&#128203; Copiar lista</button>
     </div>
   </div>
+  <div style="height:14px"></div>
+</main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PANEL FINANZAS
+════════════════════════════════════════════ -->
+<div id="panelFinanzas" class="panel">
+<main>
+
+  <!-- Selector de proyecto -->
+  <div class="card">
+    <div class="card-title"><span>📁</span> Proyecto</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end">
+      <div>
+        <label>Nombre del proyecto</label>
+        <input type="text" id="finProyecto" placeholder="Ej: Casa Escazú, Apto Heredia..." oninput="filtrarProyectos(this.value)"/>
+        <div id="finSugerencias" style="display:none;background:#1e1e1e;border:1px solid #333;border-radius:8px;margin-top:4px;max-height:150px;overflow-y:auto;"></div>
+      </div>
+      <button class="btn btn-green" onclick="seleccionarProyecto()" style="padding:13px 14px;white-space:nowrap">Abrir</button>
+    </div>
+  </div>
+
+  <!-- Dashboard del proyecto -->
+  <div id="finDashboard" style="display:none">
+
+    <div class="card" style="background:#1a2a1a;border-color:#2a4a2a">
+      <div class="card-title" style="color:#4ade80"><span>📊</span> <span id="finNombreActivo"></span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+        <div style="background:#0d1f0d;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:#888;margin-bottom:4px">COBRADO</div>
+          <div id="finTotalCobrado" style="font-size:18px;font-weight:700;color:#4ade80">₡0</div>
+        </div>
+        <div style="background:#1f0d0d;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:#888;margin-bottom:4px">GASTADO</div>
+          <div id="finTotalGastado" style="font-size:18px;font-weight:700;color:#f87171">₡0</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:#1f1a0d;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:#888;margin-bottom:4px">GANANCIA</div>
+          <div id="finGanancia" style="font-size:18px;font-weight:700;color:#fbbf24">₡0</div>
+        </div>
+        <div style="background:#0d1820;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:#888;margin-bottom:4px">PENDIENTE</div>
+          <div id="finPendiente" style="font-size:18px;font-weight:700;color:#60a5fa">₡0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario nuevo movimiento -->
+    <div class="card">
+      <div class="card-title"><span>➕</span> Agregar movimiento</div>
+      <div class="mini-grid">
+        <div>
+          <label>Tipo</label>
+          <select id="finTipo">
+            <option value="cobro">💰 Pago recibido</option>
+            <option value="anticipo">🤝 Anticipo recibido</option>
+            <option value="pendiente">📋 Por cobrar (presupuesto)</option>
+            <option value="material">🧱 Gasto materiales</option>
+            <option value="planilla">👷 Pago planilla</option>
+            <option value="transporte">🚗 Transporte</option>
+            <option value="otro_gasto">📦 Otro gasto</option>
+          </select>
+        </div>
+        <div>
+          <label>Monto (₡)</label>
+          <input type="number" id="finMonto" placeholder="Ej: 250000"/>
+        </div>
+      </div>
+      <label style="margin-top:10px">Nota</label>
+      <input type="text" id="finNota" placeholder="Ej: Anticipo semana 1, compra de cerámica..."/>
+      <label style="margin-top:10px">Fecha</label>
+      <input type="date" id="finFecha"/>
+      <button class="btn btn-green btn-full" onclick="agregarMovimiento()" style="margin-top:14px;font-size:16px;padding:16px">
+        ✅ Registrar movimiento
+      </button>
+    </div>
+
+    <!-- Historial -->
+    <div class="card">
+      <div class="card-title"><span>📋</span> Historial de movimientos</div>
+      <div id="finHistorial"></div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:10px">
+      <button class="btn btn-gray btn-sm" onclick="if(confirm('¿Eliminar este proyecto y todos sus movimientos?')){eliminarProyecto()}">🗑️ Eliminar proyecto</button>
+    </div>
+  </div>
+
   <div style="height:14px"></div>
 </main>
 </div>
@@ -1574,15 +1674,15 @@ function renderPrecios() {
     var wrap = document.createElement('div');
     wrap.style.cssText = 'margin-bottom:10px';
     var hdr = document.createElement('div');
-    hdr.style.cssText = 'font-size:11px;font-weight:700;color:#888;margin:10px 0 4px;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;border-bottom:1px solid #eee';
+    hdr.style.cssText = 'font-size:11px;font-weight:700;color:#888;margin:10px 0 4px;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;border-bottom:1px solid #333';
     hdr.textContent = cat;
     wrap.appendChild(hdr);
     grupos[cat].forEach(function(p) {
       var row = document.createElement('div');
-      row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5';
+      row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #2a2a2a';
       var info = document.createElement('div');
       var nm = document.createElement('div');
-      nm.style.cssText = 'font-size:14px;font-weight:600;color:#1c1c1c';
+      nm.style.cssText = 'font-size:14px;font-weight:600;color:#e0e0e0';
       nm.textContent = p.nombre;
       info.appendChild(nm);
       if (p.nota) { var nt=document.createElement('div'); nt.style.cssText='font-size:11px;color:#888'; nt.textContent=p.nota; info.appendChild(nt); }
@@ -1590,7 +1690,7 @@ function renderPrecios() {
       var pr = document.createElement('div');
       pr.style.cssText = 'text-align:right';
       var mn = document.createElement('div');
-      mn.style.cssText = 'font-size:14px;font-weight:700;color:#5c0f0f;white-space:nowrap';
+      mn.style.cssText = 'font-size:14px;font-weight:700;color:#e05555;white-space:nowrap';
       mn.textContent = '₡' + Number(p.precio).toLocaleString('es-CR');
       var un = document.createElement('div');
       un.style.cssText = 'font-size:11px;color:#888';
@@ -1646,6 +1746,156 @@ function buildPreciosTexto() {
 // Init prices
 cargarPreciosDefault();
 renderPrecios();
+
+/* ═══════════════════════════════════════════
+   FINANZAS — libro de caja por proyecto
+════════════════════════════════════════════ */
+
+var finProyectoActivo = null;
+
+function getProyectos() {
+  try { return JSON.parse(localStorage.getItem('rp_finanzas') || '{}'); } catch(e) { return {}; }
+}
+
+function saveProyectos(data) {
+  localStorage.setItem('rp_finanzas', JSON.stringify(data));
+}
+
+function filtrarProyectos(q) {
+  var proyectos = getProyectos();
+  var nombres = Object.keys(proyectos);
+  var sugerencias = document.getElementById('finSugerencias');
+  if (!q || nombres.length === 0) { sugerencias.style.display = 'none'; return; }
+  var filtrados = nombres.filter(function(n) { return n.toLowerCase().includes(q.toLowerCase()); });
+  if (filtrados.length === 0) { sugerencias.style.display = 'none'; return; }
+  sugerencias.innerHTML = filtrados.map(function(n) {
+    return '<div onclick="document.getElementById(\'finProyecto\').value=\'' + n.replace(/'/g,"\\'") + '\';document.getElementById(\'finSugerencias\').style.display=\'none\';" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #2a2a2a;color:#ddd;font-size:14px">' + n + '</div>';
+  }).join('');
+  sugerencias.style.display = 'block';
+}
+
+function seleccionarProyecto() {
+  var nombre = document.getElementById('finProyecto').value.trim();
+  if (!nombre) { alert('Escriba el nombre del proyecto.'); return; }
+  document.getElementById('finSugerencias').style.display = 'none';
+  var proyectos = getProyectos();
+  if (!proyectos[nombre]) {
+    proyectos[nombre] = { movimientos: [] };
+    saveProyectos(proyectos);
+  }
+  finProyectoActivo = nombre;
+  renderFinanzas();
+}
+
+function agregarMovimiento() {
+  if (!finProyectoActivo) { alert('Seleccione un proyecto primero.'); return; }
+  var tipo  = document.getElementById('finTipo').value;
+  var monto = parseFloat(document.getElementById('finMonto').value);
+  var nota  = document.getElementById('finNota').value.trim();
+  var fecha = document.getElementById('finFecha').value;
+  if (!monto || isNaN(monto) || monto <= 0) { alert('Ingrese un monto válido.'); return; }
+  if (!fecha) fecha = new Date().toISOString().split('T')[0];
+
+  var proyectos = getProyectos();
+  proyectos[finProyectoActivo].movimientos.push({ tipo: tipo, monto: monto, nota: nota, fecha: fecha, id: Date.now() });
+  saveProyectos(proyectos);
+
+  document.getElementById('finMonto').value = '';
+  document.getElementById('finNota').value  = '';
+  renderFinanzas();
+}
+
+function eliminarMovimiento(id) {
+  if (!confirm('¿Eliminar este movimiento?')) return;
+  var proyectos = getProyectos();
+  proyectos[finProyectoActivo].movimientos = proyectos[finProyectoActivo].movimientos.filter(function(m){ return m.id !== id; });
+  saveProyectos(proyectos);
+  renderFinanzas();
+}
+
+function eliminarProyecto() {
+  var proyectos = getProyectos();
+  delete proyectos[finProyectoActivo];
+  saveProyectos(proyectos);
+  finProyectoActivo = null;
+  document.getElementById('finProyecto').value = '';
+  document.getElementById('finDashboard').style.display = 'none';
+}
+
+function formatColones(n) {
+  return '₡' + Math.round(n).toLocaleString('es-CR');
+}
+
+var TIPO_INFO = {
+  cobro:      { label: 'Pago recibido',    icon: '💰', esIngreso: true,  esPendiente: false },
+  anticipo:   { label: 'Anticipo recibido',icon: '🤝', esIngreso: true,  esPendiente: false },
+  pendiente:  { label: 'Por cobrar',       icon: '📋', esIngreso: false, esPendiente: true  },
+  material:   { label: 'Gasto materiales', icon: '🧱', esIngreso: false, esPendiente: false },
+  planilla:   { label: 'Pago planilla',    icon: '👷', esIngreso: false, esPendiente: false },
+  transporte: { label: 'Transporte',       icon: '🚗', esIngreso: false, esPendiente: false },
+  otro_gasto: { label: 'Otro gasto',       icon: '📦', esIngreso: false, esPendiente: false }
+};
+
+function renderFinanzas() {
+  // Poner fecha de hoy por defecto
+  if (!document.getElementById('finFecha').value) {
+    document.getElementById('finFecha').value = new Date().toISOString().split('T')[0];
+  }
+
+  if (!finProyectoActivo) {
+    document.getElementById('finDashboard').style.display = 'none';
+    return;
+  }
+
+  var proyectos = getProyectos();
+  var proyecto  = proyectos[finProyectoActivo];
+  if (!proyecto) { finProyectoActivo = null; document.getElementById('finDashboard').style.display = 'none'; return; }
+
+  document.getElementById('finDashboard').style.display  = 'block';
+  document.getElementById('finNombreActivo').textContent = finProyectoActivo;
+
+  var movs = proyecto.movimientos || [];
+  var totalCobrado = 0, totalGastado = 0, totalPendiente = 0;
+
+  movs.forEach(function(m) {
+    var info = TIPO_INFO[m.tipo] || {};
+    if (info.esIngreso)   totalCobrado   += m.monto;
+    else if (info.esPendiente) totalPendiente += m.monto;
+    else                  totalGastado   += m.monto;
+  });
+
+  var ganancia = totalCobrado - totalGastado;
+
+  document.getElementById('finTotalCobrado').textContent = formatColones(totalCobrado);
+  document.getElementById('finTotalGastado').textContent = formatColones(totalGastado);
+  document.getElementById('finGanancia').textContent     = formatColones(ganancia);
+  document.getElementById('finGanancia').style.color     = ganancia >= 0 ? '#4ade80' : '#f87171';
+  document.getElementById('finPendiente').textContent    = formatColones(totalPendiente);
+
+  // Historial (más reciente primero)
+  var historial = document.getElementById('finHistorial');
+  if (movs.length === 0) {
+    historial.innerHTML = '<p class="small" style="text-align:center;color:#666">Sin movimientos aún.</p>';
+    return;
+  }
+
+  var sorted = movs.slice().sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||'') || b.id - a.id; });
+  historial.innerHTML = sorted.map(function(m) {
+    var info   = TIPO_INFO[m.tipo] || { label: m.tipo, icon: '•', esIngreso: false, esPendiente: false };
+    var color  = info.esIngreso ? '#4ade80' : info.esPendiente ? '#60a5fa' : '#f87171';
+    var signo  = info.esIngreso ? '+' : info.esPendiente ? '' : '-';
+    var fecha  = m.fecha ? m.fecha.split('-').reverse().join('/') : '';
+    return '<div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #2a2a2a">' +
+      '<span style="font-size:18px">' + info.icon + '</span>' +
+      '<div><div style="font-size:13px;font-weight:600;color:#ccc">' + info.label + '</div>' +
+        (m.nota ? '<div style="font-size:11px;color:#777">' + m.nota + '</div>' : '') +
+        (fecha   ? '<div style="font-size:11px;color:#555">' + fecha + '</div>'   : '') +
+      '</div>' +
+      '<div style="font-size:15px;font-weight:700;color:' + color + '">' + signo + formatColones(m.monto) + '</div>' +
+      '<button onclick="eliminarMovimiento(' + m.id + ')" style="background:none;border:none;color:#555;font-size:16px;cursor:pointer;padding:4px">✕</button>' +
+    '</div>';
+  }).join('');
+}
 
 </script>
 
