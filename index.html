@@ -477,6 +477,10 @@
         💰 Registrar plata
         <small>Pagos, gastos, materiales o planilla</small>
       </button>
+      <button class="mode-btn" data-mode="consulta" onclick="setMode(this)">
+        🔍 Consultar IA
+        <small>Analizar daño o problema con foto</small>
+      </button>
     </div>
   </div>
 
@@ -886,12 +890,24 @@ function setMode(el) {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   modo = el.dataset.mode;
-  const esDinero = modo === 'dinero';
-  document.getElementById('cardDinero').style.display = esDinero ? 'block' : 'none';
-  // In money mode, hide relato textarea card and photos card to simplify UI
-  document.getElementById('cardRelato').style.display = esDinero ? 'none' : 'block';
-  document.getElementById('cardFotos').style.display = esDinero ? 'none' : 'block';
-  document.getElementById('cardMateriales').style.display = esDinero ? 'none' : 'block';
+  const esDinero   = modo === 'dinero';
+  const esConsulta = modo === 'consulta';
+  document.getElementById('cardDinero').style.display     = esDinero   ? 'block' : 'none';
+  document.getElementById('cardRelato').style.display     = esDinero   ? 'none'  : 'block';
+  document.getElementById('cardFotos').style.display      = esDinero   ? 'none'  : 'block';
+  document.getElementById('cardMateriales').style.display = (esDinero || esConsulta) ? 'none' : 'block';
+
+  // Cambiar placeholder del relato según modo
+  var relato = document.getElementById('relato');
+  if (relato) {
+    if (esConsulta) {
+      relato.placeholder = 'Ej: ¿Qué es esto en la pared? ¿Cómo se repara? ¿Es grave?...';
+    } else if (esDinero) {
+      relato.placeholder = 'Ej: El baño mide 3x2 metros, las paredes son de bloque...';
+    } else {
+      relato.placeholder = 'Ej: El baño mide 3x2 metros, las paredes son de bloque...';
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -1073,7 +1089,11 @@ function limpiarTodo() {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   document.querySelector('.mode-btn[data-mode="cotizacion"]').classList.add('active');
   modo = 'cotizacion';
+  modoActivo = 'cotizacion';
   document.getElementById('cardDinero').style.display = 'none';
+  document.getElementById('cardMateriales').style.display = 'block';
+  document.getElementById('cardFotos').style.display = 'block';
+  document.getElementById('cardRelato').style.display = 'block';
   appendSystemMsg('Conversación limpia. Puede iniciar un nuevo caso.');
   showPanel('panelNuevo', document.querySelector('.tab'));
 }
@@ -1082,6 +1102,36 @@ function limpiarTodo() {
    BUILD SYSTEM PROMPT
 ════════════════════════════════════════════ */
 function buildSystemPrompt() {
+
+  // Modo consulta: diagnóstico técnico, sin cotizar
+  if (modoActivo === 'consulta') {
+    return `Eres un maestro de obras experto con 30 años de experiencia en construcción y remodelación en Costa Rica.
+
+Rommel te está consultando sobre un problema o daño que ve en obra. Tu misión es ayudarle a entender qué está pasando y cómo resolverlo. NO cotices ni des precios, solo diagnóstico técnico claro.
+
+Cuando Rommel te describe o muestra algo, responde con este formato:
+
+🔍 DIAGNÓSTICO
+[Qué es lo que está viendo, nombre técnico del problema]
+
+⚠️ CAUSA PROBABLE
+[Por qué ocurre esto — humedad, asentamiento, materiales, instalación, etc.]
+
+🚨 NIVEL DE GRAVEDAD
+[Leve / Moderado / Grave — y por qué]
+
+🔧 CÓMO SE REPARA
+[Pasos claros y prácticos para resolverlo]
+
+🛒 MATERIALES QUE NECESITA
+[Lista de lo que hay que comprar para la reparación]
+
+💡 CONSEJO DE EXPERTO
+[Algo importante que no debe ignorar o un tip para evitar que vuelva a pasar]
+
+Habla como maestro de obras, directo y práctico. Sin rodeos. Si la foto o descripción no es suficiente para diagnosticar, pregunta puntualmente qué más necesitas ver.` + buildPreciosTexto();
+  }
+
   var formatoMateriales = incluyeMateriales ? `
 MATERIALES ESTIMADOS
 [lista con cantidades aproximadas]
