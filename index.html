@@ -915,8 +915,8 @@ async function analizarFotosConIA() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        image:    comprimidas[0],
-        fotos:    comprimidas,
+        image:    comprimidas[0].split(',')[1],
+        fotos:    comprimidas.map(function(d){ return d.split(',')[1]; }),
         cantidad: comprimidas.length
       })
     });
